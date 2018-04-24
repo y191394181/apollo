@@ -1,0 +1,44 @@
+<launch>
+    <arg name="gnss_conf" default="$(find gnss_driver)/conf/gnss_conf_back.txt" />
+    <arg name="proj4_text" default="+proj=utm +zone=49 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs " /> 
+    <arg name="odometry_topic" default="/apollo/sensor/gnss/odometry" />
+    <arg name="raw_data_topic" default="/apollo/sensor/gnss/raw_data" />
+    <arg name="rtcm_data_topic" default="/apollo/sensor/gnss/rtcm_data" />
+    <arg name="stream_status_topic" default="/apollo/sensor/gnss/stream_status" />
+    <arg name="imu_topic" default="/apollo/sensor/gnss/imu" />
+    <arg name="ins_stat_topic" default="/apollo/sensor/gnss/ins_stat" />
+    <arg name="corr_imu_topic" default="/apollo/sensor/gnss/corrected_imu" />
+    <arg name="gnss_status_topic" default="/apollo/sensor/gnss/gnss_status" />
+    <arg name="ins_status_topic" default="/apollo/sensor/gnss/ins_status" />
+    <arg name="bestpos" default="/apollo/sensor/gnss/best_pose" />
+    <arg name="eph" default="/apollo/sensor/gnss/rtk_eph" />
+    <arg name="observation" default="/apollo/sensor/gnss/rtk_obs" />
+    <arg name="frame_id" default="world" />
+    <arg name="child_frame_id" default="novatel" />
+
+    <node pkg="nodelet" type="nodelet" name="gnss_nodelet_manager"
+        args="manager" output="screen">
+    </node>
+
+    <node pkg="nodelet" type="nodelet" name="stream_nodelet"
+        args="load gnss_driver/StreamNodelet gnss_nodelet_manager" output="screen">
+        <param name="gnss_conf" value="$(arg gnss_conf)" />
+    </node>
+
+    <node pkg="nodelet" type="nodelet" name="parser_nodelet"
+        args="load gnss_driver/ParserNodelet gnss_nodelet_manager" output="screen">
+        <param name="gnss_conf" value="$(arg gnss_conf)" />
+        <param name="proj4_text" value="$(arg proj4_text)" />
+    </node>
+
+    <node pkg="nodelet" type="nodelet" name="rtcm_parser_nodelet"
+        args="load gnss_driver/RtcmParserNodelet gnss_nodelet_manager" output="screen">
+    </node>
+
+    <node pkg="nodelet" type="nodelet" name="tf_broadcaster_nodelet"
+        args="load gnss_driver/TFBroadcasterNodelet gnss_nodelet_manager" output="screen">
+        <param name="topic_odometry" value="$(arg topic_odometry)" />
+        <param name="frame_id" value="$(arg frame_id)" />
+        <param name="child_frame_id" value="$(arg child_frame_id)" />
+    </node>
+</launch>
