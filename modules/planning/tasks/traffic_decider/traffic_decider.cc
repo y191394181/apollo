@@ -26,10 +26,10 @@
 #include "modules/planning/common/planning_gflags.h"
 #include "modules/planning/tasks/traffic_decider/backside_vehicle.h"
 #include "modules/planning/tasks/traffic_decider/change_lane.h"
-#include "modules/planning/tasks/traffic_decider/cipv.h"
 #include "modules/planning/tasks/traffic_decider/creeper.h"
 #include "modules/planning/tasks/traffic_decider/crosswalk.h"
 #include "modules/planning/tasks/traffic_decider/destination.h"
+#include "modules/planning/tasks/traffic_decider/front_vehicle.h"
 #include "modules/planning/tasks/traffic_decider/keep_clear.h"
 #include "modules/planning/tasks/traffic_decider/reference_line_end.h"
 #include "modules/planning/tasks/traffic_decider/rerouting.h"
@@ -67,11 +67,6 @@ void TrafficDecider::RegisterRules() {
                           [](const TrafficRuleConfig &config) -> TrafficRule * {
                             return new ChangeLane(config);
                           });
-
-  s_rule_factory.Register(TrafficRuleConfig::CIPV,
-                          [](const TrafficRuleConfig &config) -> TrafficRule * {
-                            return new CIPV(config);
-                          });
   s_rule_factory.Register(TrafficRuleConfig::SIGNAL_LIGHT,
                           [](const TrafficRuleConfig &config) -> TrafficRule * {
                             return new SignalLight(config);
@@ -91,6 +86,10 @@ void TrafficDecider::RegisterRules() {
   s_rule_factory.Register(TrafficRuleConfig::KEEP_CLEAR,
                           [](const TrafficRuleConfig &config) -> TrafficRule * {
                             return new KeepClear(config);
+                          });
+  s_rule_factory.Register(TrafficRuleConfig::FRONT_VEHICLE,
+                          [](const TrafficRuleConfig &config) -> TrafficRule * {
+                            return new FrontVehicle(config);
                           });
 }
 
